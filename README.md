@@ -44,6 +44,15 @@ docker build -t ecom/user-service . && docker run --rm -p 8087:8087 ecom/user-se
 
 Quality config is vendored: `gradle/quality.gradle`, `config/checkstyle/`.
 
+## Testing
+
+`./gradlew test` runs every layer below; `./gradlew build` also runs Checkstyle + Spotless and writes a JaCoCo report.
+
+- **Smoke** — `UserServiceApplicationTests`: the full Spring context starts.
+- **Unit** — `service/UserProfileServiceTest`: `createOrGet` saves a new email and returns the existing profile for a known one; `getById` throws when missing.
+- **API / web slice** — `web/UserControllerTest` (`@WebMvcTest`): `POST /users` → 201; an invalid email → 400 `VALIDATION_FAILED`; `GET /users/{id}` missing → 404 `USER_NOT_FOUND`.
+- **Repository slice** — `repository/UserProfileRepositoryTest` (`@DataJpaTest`): `findByEmail` / `existsByEmail`.
+
 ## Config
 
 | Variable | Default | Purpose |
