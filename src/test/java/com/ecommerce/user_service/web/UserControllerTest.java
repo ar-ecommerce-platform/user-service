@@ -49,6 +49,16 @@ class UserControllerTest {
   }
 
   @Test
+  void me_returnsCallersProfile() throws Exception {
+    when(service.createOrGet(new CreateUserRequest("ada@example.com", "ada@example.com")))
+        .thenReturn(new UserProfile("ada@example.com", "ada@example.com"));
+
+    mvc.perform(get("/users/me").header("X-User-Id", "ada@example.com"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.email").value("ada@example.com"));
+  }
+
+  @Test
   void getById_missing_returns404() throws Exception {
     when(service.getById(9L)).thenThrow(new UserNotFoundException("nope"));
 

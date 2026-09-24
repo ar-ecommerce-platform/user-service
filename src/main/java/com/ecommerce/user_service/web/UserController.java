@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -31,6 +32,15 @@ public class UserController {
   public ResponseEntity<UserResponse> create(@Valid @RequestBody CreateUserRequest request) {
     UserResponse body = UserResponse.from(service.createOrGet(request));
     return ResponseEntity.created(URI.create("/users/" + body.id())).body(body);
+  }
+
+  /**
+   * The caller's own profile, created on first access. {@code X-User-Id} is set by the gateway from
+   * the verified token. The other endpoints here are internal: the gateway does not expose them.
+   */
+  @GetMapping("/me")
+  public UserResponse me(@RequestHeader("X-User-Id") String userId) {
+    return UserResponse.from(service.createOrGet(new CreateUserRequest(userId, userId)));
   }
 
   @GetMapping
