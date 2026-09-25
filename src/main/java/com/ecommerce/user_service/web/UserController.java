@@ -3,6 +3,7 @@ package com.ecommerce.user_service.web;
 import com.ecommerce.user_service.service.UserProfileService;
 import com.ecommerce.user_service.web.dto.CreateUserRequest;
 import com.ecommerce.user_service.web.dto.UserResponse;
+import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.List;
@@ -27,7 +28,8 @@ public class UserController {
     this.service = service;
   }
 
-  /** Creates (or returns the existing) profile for the given email. */
+  /** Creates (or returns the existing) profile for the given email. Internal, not in the docs. */
+  @Hidden
   @PostMapping
   public ResponseEntity<UserResponse> create(@Valid @RequestBody CreateUserRequest request) {
     UserResponse body = UserResponse.from(service.createOrGet(request));
@@ -43,16 +45,19 @@ public class UserController {
     return UserResponse.from(service.createOrGet(new CreateUserRequest(userId, userId)));
   }
 
+  @Hidden
   @GetMapping
   public List<UserResponse> list() {
     return service.findAll().stream().map(UserResponse::from).toList();
   }
 
+  @Hidden
   @GetMapping("/{id}")
   public UserResponse getById(@PathVariable Long id) {
     return UserResponse.from(service.getById(id));
   }
 
+  @Hidden
   @GetMapping("/by-email")
   public UserResponse getByEmail(@RequestParam String email) {
     return UserResponse.from(service.getByEmail(email));
